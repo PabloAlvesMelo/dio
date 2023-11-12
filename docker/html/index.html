@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Informe seu nome:</h1>
+    <form action="greeting.html" method="get" onsubmit="return validateForm()">
+        <label for="username">Seu nome:</label>
+        <input type="text" id="username" name="username" placeholder="Digite seu nome" required>
+        <br>
+        <button type="submit" style="display: none;"></button>
+    </form>
+
+    <script>
+        function validateForm() {
+            const username = document.getElementById('username').value;
+            if (username.trim() === '') {
+                alert('Por favor, digite seu nome.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

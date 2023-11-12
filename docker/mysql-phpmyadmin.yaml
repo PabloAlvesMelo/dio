@@ -1,0 +1,50 @@
+version: '3.8'
+# Container 01
+services:
+  mysql-server:
+    image: sgsistemas/mysql:5.7.25
+    restart: always
+    container_name: mysql-server
+    hostname: MySQL-Srv
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: 'Senha123'
+      MYSQL_DATABASE: teste
+#      MYSQL_USER: 'teste'
+#      MYSQL_PASSWORD: 'Teste123'
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 500000
+        hard: 800000
+    volumes:
+      # Local banco de dados
+      - ~/mysql/db:/var/lib/mysql
+      # Local configuracao do mysql
+#      - /opt/sg/my.cnf:/etc/my.cnf
+#      - /opt/sg/mysql-server:/etc/logrotate.d/mysql-server
+#      - /opt/log-mysql:/var/log/mysql
+    networks:
+      - lan-db
+      - admin
+
+# Container 02  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: always    
+    depends_on:
+      - mysql-server
+    environment: 
+      PMA_HOST: mysql-server
+      MYSQL_ROOT_PASSWORD: 'Senha123'
+    ports:
+      - 8080:80
+    networks:
+      - admin
+
+networks:
+  lan-db:
+    driver: bridge
+  admin:
+    driver: bridge

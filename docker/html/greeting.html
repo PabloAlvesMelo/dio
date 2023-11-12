@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 100px;
+        }
+    </style>
+</head>
+<body>
+    <h1><p id="greeting"></p></h1>
+    <h1><p id="time"></p></h1>
+
+    <script>
+        function getGreeting(username) {
+            const currentHour = new Date().getHours();
+
+            if (currentHour >= 5 && currentHour < 12) {
+                return `Bom dia, ${username}!`;
+            } else if (currentHour >= 12 && currentHour < 18) {
+                return `Boa tarde, ${username}!`;
+            } else {
+                return `Boa noite, ${username}!`;
+            }
+        }
+
+        function updateGreeting(username) {
+            const greetingElement = document.getElementById('greeting');
+            greetingElement.textContent = getGreeting(username);
+        }
+
+        function updateTime() {
+            const timeElement = document.getElementById('time');
+            const currentTime = new Date().toLocaleTimeString();
+            timeElement.textContent = `Hora atual: ${currentTime}`;
+        }
+
+        function updatePage() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const username = urlParams.get('username') || 'Amigo';
+            updateGreeting(username);
+            updateTime();
+        }
+
+        // Atualizar a página a cada minuto
+        setInterval(updatePage, 60000);
+
+        // Chamar a função pela primeira vez
+        updatePage();
+    </script>
+</body>
+</html>
