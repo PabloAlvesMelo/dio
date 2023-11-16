@@ -1,0 +1,48 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+# Criando 4 maquinas virtuais iguais
+  (1..4).each do |i|    
+    config.vm.define "cloud-0#{i}" do |node|
+      # Configuração da máquina virtual
+#     node.vm.box = "ubuntu/bionic64"
+      node.vm.box = "bento/ubuntu-20.04"
+      node.vm.hostname = "cloud-0#{i}"
+#     node.vm.network "forwarded_port", guest: 80, host: 808#{i}
+      node.vm.network "public_network", type: "dhcp", bridge: "Realtek PCIe GbE Family Controller"  # Substitua "nome-da-sua-interface-de-rede" pela interface desejada
+      # Fazendo a troca do hostname de acordo com o numero da maquina
+      node.vm.provision "shell", inline: <<-SHELL
+        echo "cloud-0#{i}" | sudo tee /etc/hostname
+        sudo hostnamectl set-hostname cloud-0#{i}
+        sudo sed -i 's/127.0.1.1\s.*/127.0.1.1\tcloud-0#{i}/' /etc/hosts
+        sudo systemctl restart systemd-hostnamed
+      SHELL
+
+      # Recursos da máquina virtual
+      node.vm.provider "virtualbox" do |vb|
+        vb.name = "cloud-0#{i}"
+        vb.memory = 2048 # 2GB de memória
+        vb.cpus = 2      # 2 núcleos de CPU
+
+        # Se for necessario um disco virtual a mais.
+#       vb.customize ["createhd", "--filename", "cloud-0#{i}.vdi", "--size", 50 * 1024] # HD de 50GB
+#       vb.customize ["storageattach", :id, "--storagectl", "SATA", "--port", 1, "--device", 0, "--type", "hdd", "--medium", "cloud-0#{i}.vdi"]
+      end
+
+      # Configuração do script de inicialização
+      node.vm.provision "shell", path: "install-docker-vms.sh"
+      
+      # Configuração do usuário e senha
+      node.vm.provision "shell", inline: <<-SHELL
+        useradd -m -p "$(openssl passwd -1 1)" -s /bin/bash ubuntu
+      SHELL
+
+      node.vm.provision "shell", inline: <<-SHELL
+      echo "%ubuntu    ALL=(ALL) NOPASSWD:ALL" | sudo tee -a /etc/sudoers
+      SHELL
+
+    end
+  end
+end
