@@ -1,0 +1,33 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure("2") do |config|
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.customize ["modifyvm", :id, "--ioapic", "on"]
+    vb.customize ["modifyvm", :id, "--memory", "1024"]
+    vb.customize ["modifyvm", :id, "--cpus", "2"]
+  end
+
+  # Máquina Windows 10
+  config.vm.define "windows_10" do |windows_10|
+    windows_10.vm.box = "tialexandre/Windows10Pro"
+    windows_10.vm.network "public_network", bridge: "Realtek PCIe GbE Family Controller"
+    windows_10.vm.version = "1.0.0"
+    windows_10.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "4096"]
+      vb.name = "Win_10"
+    end
+  end
+
+  # Máquina Kali Linux
+  config.vm.define "kali_linux" do |kali_linux|
+    kali_linux.vm.box = "kalilinux/rolling"
+    kali_linux.vm.network "public_network", bridge: "Realtek PCIe GbE Family Controller"
+    kali_linux.vm.provider "virtualbox" do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "2048"]
+      vb.name = "Kali"
+    end
+  end
+
+end
